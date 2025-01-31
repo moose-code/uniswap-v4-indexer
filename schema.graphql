@@ -1,0 +1,116 @@
+type PoolManager_Approval {
+  id: ID!
+  owner: String!
+  spender: String!
+  event_id: BigInt!
+  amount: BigInt!
+}
+
+type PoolManager_Donate {
+  id: ID!
+  event_id: String!
+  sender: String!
+  amount0: BigInt!
+  amount1: BigInt!
+}
+
+type PoolManager_Initialize {
+  id: ID!
+  event_id: String!
+  currency0: String!
+  currency1: String!
+  fee: BigInt!
+  tickSpacing: BigInt!
+  hooks: String!
+  sqrtPriceX96: BigInt!
+  tick: BigInt!
+}
+
+type PoolManager_ModifyLiquidity {
+  id: ID!
+  event_id: String!
+  sender: String!
+  tickLower: BigInt!
+  tickUpper: BigInt!
+  liquidityDelta: BigInt!
+  salt: String!
+}
+
+type PoolManager_OperatorSet {
+  id: ID!
+  owner: String!
+  operator: String!
+  approved: Boolean!
+}
+
+type PoolManager_OwnershipTransferred {
+  id: ID!
+  user: String!
+  newOwner: String!
+}
+
+type PoolManager_ProtocolFeeControllerUpdated {
+  id: ID!
+  protocolFeeController: String!
+}
+
+type PoolManager_ProtocolFeeUpdated {
+  id: ID!
+  event_id: String!
+  protocolFee: BigInt!
+}
+
+type PoolManager_Swap {
+  id: ID!
+  event_id: String!
+  sender: String!
+  amount0: BigInt!
+  amount1: BigInt!
+  sqrtPriceX96: BigInt!
+  liquidity: BigInt!
+  tick: BigInt!
+  fee: BigInt!
+}
+
+type PoolManager_Transfer {
+  id: ID!
+  caller: String!
+  from: String!
+  to: String!
+  event_id: BigInt!
+  amount: BigInt!
+}
+
+type PositionManager_Approval {
+  id: ID!
+  owner: String!
+  spender: String!
+  event_id: BigInt!
+}
+
+type PositionManager_ApprovalForAll {
+  id: ID!
+  owner: String!
+  operator: String!
+  approved: Boolean!
+}
+
+type PositionManager_Subscription {
+  id: ID!
+  tokenId: BigInt!
+  subscriber: String!
+}
+
+type PositionManager_Transfer {
+  id: ID!
+  from: String!
+  to: String!
+  event_id: BigInt!
+}
+
+type PositionManager_Unsubscription {
+  id: ID!
+  tokenId: BigInt!
+  subscriber: String!
+}
+
