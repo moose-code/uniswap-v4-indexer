@@ -19,6 +19,7 @@ import {
   PositionManager_Subscription,
   PositionManager_Transfer,
   PositionManager_Unsubscription,
+  GlobalStats,
 } from "generated";
 
 PoolManager.Approval.handler(async ({ event, context }) => {
@@ -128,7 +129,23 @@ PoolManager.Swap.handler(async ({ event, context }) => {
     fee: event.params.fee,
   };
 
-  context.PoolManager_Swap.set(entity);
+  const statsId = event.chainId.toString();
+  let stats = await context.GlobalStats.get(statsId);
+
+  if (!stats) {
+    stats = {
+      id: statsId,
+      numberOfSwaps: BigInt(0),
+    };
+  }
+
+  stats = {
+    ...stats,
+    numberOfSwaps: stats.numberOfSwaps + BigInt(1),
+  };
+
+  await context.GlobalStats.set(stats);
+  await context.PoolManager_Swap.set(entity);
 });
 
 PoolManager.Transfer.handler(async ({ event, context }) => {
