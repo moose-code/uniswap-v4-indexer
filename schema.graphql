@@ -1,6 +1,7 @@
 type GlobalStats {
   id: ID!
   numberOfSwaps: BigInt!
+  numberOfPools: BigInt!
 }
 
 type PoolManager_Approval {

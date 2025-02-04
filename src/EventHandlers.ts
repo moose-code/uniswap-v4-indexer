@@ -59,7 +59,24 @@ PoolManager.Initialize.handler(async ({ event, context }) => {
     tick: event.params.tick,
   };
 
-  context.PoolManager_Initialize.set(entity);
+  const statsId = event.chainId.toString();
+  let stats = await context.GlobalStats.get(statsId);
+
+  if (!stats) {
+    stats = {
+      id: statsId,
+      numberOfSwaps: BigInt(0),
+      numberOfPools: BigInt(0),
+    };
+  }
+
+  stats = {
+    ...stats,
+    numberOfPools: stats.numberOfPools + BigInt(1),
+  };
+
+  await context.GlobalStats.set(stats);
+  await context.PoolManager_Initialize.set(entity);
 });
 
 PoolManager.ModifyLiquidity.handler(async ({ event, context }) => {
@@ -136,6 +153,7 @@ PoolManager.Swap.handler(async ({ event, context }) => {
     stats = {
       id: statsId,
       numberOfSwaps: BigInt(0),
+      numberOfPools: BigInt(0),
     };
   }
 
