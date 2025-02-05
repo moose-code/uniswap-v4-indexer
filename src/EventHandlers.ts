@@ -59,6 +59,20 @@ PoolManager.Initialize.handler(async ({ event, context }) => {
     tick: event.params.tick,
   };
 
+  // Create new pool entity
+  const pool = {
+    id: event.params.id,
+    currency0: event.params.currency0,
+    currency1: event.params.currency1,
+    fee: event.params.fee,
+    tickSpacing: event.params.tickSpacing,
+    hooks: event.params.hooks,
+    numberOfSwaps: BigInt(0),
+    createdAtTimestamp: BigInt(event.block.timestamp),
+    createdAtBlockNumber: BigInt(event.block.number),
+  };
+
+  // Update global stats
   const statsId = event.chainId.toString();
   let stats = await context.GlobalStats.get(statsId);
 
@@ -75,6 +89,7 @@ PoolManager.Initialize.handler(async ({ event, context }) => {
     numberOfPools: stats.numberOfPools + BigInt(1),
   };
 
+  await context.Pool.set(pool);
   await context.GlobalStats.set(stats);
   await context.PoolManager_Initialize.set(entity);
 });
@@ -145,6 +160,16 @@ PoolManager.Swap.handler(async ({ event, context }) => {
     tick: event.params.tick,
     fee: event.params.fee,
   };
+
+  // Update pool stats
+  let poolData = await context.Pool.get(event.params.id);
+  if (poolData) {
+    poolData = {
+      ...poolData,
+      numberOfSwaps: poolData.numberOfSwaps + BigInt(1),
+    };
+    await context.Pool.set(poolData);
+  }
 
   const statsId = event.chainId.toString();
   let stats = await context.GlobalStats.get(statsId);

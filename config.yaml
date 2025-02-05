@@ -105,4 +105,22 @@ networks:
       - name: PoolManager
         address:
           - 0x360e68faccca8ca495c1b759fd9eee466db9fb32
+  - id: 43114
+    start_block: 0
+    contracts:
+      - name: PositionManager
+        address:
+          - 0xb74b1f14d2754acfcbbe1a221023a5cf50ab8acd
+      - name: PoolManager
+        address:
+          - 0x06380c0e0912312b5150364b9dc4542ba0dbbc85
+  - id: 56
+    start_block: 0
+    contracts:
+      - name: PositionManager
+        address:
+          - 0x7a4a5c919ae2541aed11041a1aeee68f1287f95b
+      - name: PoolManager
+        address:
+          - 0x28e2ea090877bf75740558f6bfb36a5ffee9e9df
 rollback_on_reorg: false

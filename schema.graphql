@@ -119,3 +119,15 @@ type PositionManager_Unsubscription {
   tokenId: BigInt!
   subscriber: String!
 }
+
+type Pool {
+  id: ID!
+  currency0: String!
+  currency1: String!
+  fee: BigInt!
+  tickSpacing: BigInt!
+  hooks: String!
+  numberOfSwaps: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
+}
