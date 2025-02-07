@@ -20,6 +20,7 @@ import {
   PositionManager_Transfer,
   PositionManager_Unsubscription,
   GlobalStats,
+  HookStats,
 } from "generated";
 
 PoolManager.Approval.handler(async ({ event, context }) => {
@@ -62,6 +63,7 @@ PoolManager.Initialize.handler(async ({ event, context }) => {
   // Create new pool entity
   const pool = {
     id: event.params.id,
+    chainId: BigInt(event.chainId),
     currency0: event.params.currency0,
     currency1: event.params.currency1,
     fee: event.params.fee,
@@ -72,6 +74,9 @@ PoolManager.Initialize.handler(async ({ event, context }) => {
     createdAtBlockNumber: BigInt(event.block.number),
   };
 
+  const isHookedPool =
+    event.params.hooks !== "0x0000000000000000000000000000000000000000";
+
   // Update global stats
   const statsId = event.chainId.toString();
   let stats = await context.GlobalStats.get(statsId);
@@ -81,13 +86,38 @@ PoolManager.Initialize.handler(async ({ event, context }) => {
       id: statsId,
       numberOfSwaps: BigInt(0),
       numberOfPools: BigInt(0),
+      hookedPools: BigInt(0),
+      hookedSwaps: BigInt(0),
     };
   }
 
   stats = {
     ...stats,
     numberOfPools: stats.numberOfPools + BigInt(1),
+    hookedPools: stats.hookedPools + (isHookedPool ? BigInt(1) : BigInt(0)),
   };
+
+  // Update hook specific stats if it's a hooked pool
+  if (isHookedPool) {
+    let hookStats = await context.HookStats.get(event.params.hooks);
+
+    if (!hookStats) {
+      hookStats = {
+        id: event.params.hooks,
+        chainId: BigInt(event.chainId),
+        numberOfPools: BigInt(0),
+        numberOfSwaps: BigInt(0),
+        firstPoolCreatedAt: BigInt(event.block.timestamp),
+      };
+    }
+
+    hookStats = {
+      ...hookStats,
+      numberOfPools: hookStats.numberOfPools + BigInt(1),
+    };
+
+    await context.HookStats.set(hookStats);
+  }
 
   await context.Pool.set(pool);
   await context.GlobalStats.set(stats);
@@ -161,16 +191,20 @@ PoolManager.Swap.handler(async ({ event, context }) => {
     fee: event.params.fee,
   };
 
-  // Update pool stats
-  let poolData = await context.Pool.get(event.params.id);
-  if (poolData) {
-    poolData = {
-      ...poolData,
-      numberOfSwaps: poolData.numberOfSwaps + BigInt(1),
+  let pool = await context.Pool.get(event.params.id);
+  if (pool) {
+    pool = {
+      ...pool,
+      numberOfSwaps: pool.numberOfSwaps + BigInt(1),
     };
-    await context.Pool.set(poolData);
+  } else {
+    return;
   }
 
+  const isHookedPool =
+    pool.hooks !== "0x0000000000000000000000000000000000000000";
+
+  // Update global stats
   const statsId = event.chainId.toString();
   let stats = await context.GlobalStats.get(statsId);
 
@@ -179,14 +213,30 @@ PoolManager.Swap.handler(async ({ event, context }) => {
       id: statsId,
       numberOfSwaps: BigInt(0),
       numberOfPools: BigInt(0),
+      hookedPools: BigInt(0),
+      hookedSwaps: BigInt(0),
     };
   }
 
   stats = {
     ...stats,
     numberOfSwaps: stats.numberOfSwaps + BigInt(1),
+    hookedSwaps: stats.hookedSwaps + (isHookedPool ? BigInt(1) : BigInt(0)),
   };
 
+  // Update hook specific stats
+  if (isHookedPool) {
+    let hookStats = await context.HookStats.get(pool.hooks);
+    if (hookStats) {
+      hookStats = {
+        ...hookStats,
+        numberOfSwaps: hookStats.numberOfSwaps + BigInt(1),
+      };
+      await context.HookStats.set(hookStats);
+    }
+  }
+
+  await context.Pool.set(pool);
   await context.GlobalStats.set(stats);
   await context.PoolManager_Swap.set(entity);
 });

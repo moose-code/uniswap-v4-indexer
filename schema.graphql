@@ -1,7 +1,17 @@
 type GlobalStats {
-  id: ID!
-  numberOfSwaps: BigInt!
-  numberOfPools: BigInt!
+  id: ID! # chainId
+  numberOfSwaps: BigInt! # total swaps on network
+  numberOfPools: BigInt! # total pools on network
+  hookedPools: BigInt! # number of pools with hooks
+  hookedSwaps: BigInt! # number of swaps through hooked pools
+}
+
+type HookStats {
+  id: ID! # hook address
+  chainId: BigInt! # Added this field
+  numberOfPools: BigInt! # number of pools using this hook
+  numberOfSwaps: BigInt! # number of swaps through pools with this hook
+  firstPoolCreatedAt: BigInt! # timestamp of first pool creation
 }
 
 type PoolManager_Approval {
@@ -122,6 +132,7 @@ type PositionManager_Unsubscription {
 
 type Pool {
   id: ID!
+  chainId: BigInt!
   currency0: String!
   currency1: String!
   fee: BigInt!
