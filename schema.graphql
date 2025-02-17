@@ -138,7 +138,7 @@ type Pool {
   fee: BigInt!
   tickSpacing: BigInt!
   hooks: String!
-  numberOfSwaps: BigInt!
+  numberOfSwaps: BigInt! @index
   createdAtTimestamp: BigInt!
   createdAtBlockNumber: BigInt!
 }

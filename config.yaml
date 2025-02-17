@@ -123,4 +123,15 @@ networks:
       - name: PoolManager
         address:
           - 0x28e2ea090877bf75740558f6bfb36a5ffee9e9df
+  - id: 130
+    hypersync_config:
+      url: https://130.hypersync.xyz
+    start_block: 0
+    contracts:
+      # - name: PositionManager
+      #   address:
+      #     -
+      - name: PoolManager
+        address:
+          - 0x1F98400000000000000000000000000000000004
 rollback_on_reorg: false
